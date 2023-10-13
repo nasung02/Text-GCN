@@ -1,0 +1,21 @@
+dataset                    : twitter_asian_prejudice_small
+device                     : cpu
+hostname                   : Natalies-MacBook-Air-4.local
+init_type                  : one_hot_init
+lr                         : 0.02
+model                      : TextGNN:pred_type=softmax,node_embd_type=gcn,num_layers=2,layer_dim_list=200_4,act=relu,dropout=True,class_weights=True
+num_epochs                 : 400
+random_seed                : 3
+tvt_list                   : ['train', 'test', 'val']
+tvt_ratio                  : [0.8, 0.1, 0.1]
+use_best_val_model_for_inference : True
+use_comet_ml               : False
+use_edge_weights           : False
+user                       : nasung
+validation_metric          : accuracy
+validation_window_size     : 10
+word_window_size           : 10
+ts                         : 2023-10-13T10-21-34.725124
+
+python /Users/nasung/git/Text-GCN/main.py --dataset=twitter_asian_prejudice_small  --device=cpu  --hostname=Natalies-MacBook-Air-4.local  --init_type=one_hot_init  --lr=0.02  --model=TextGNN:pred_type=softmax,node_embd_type=gcn,num_layers=2,layer_dim_list=200_4,act=relu,dropout=True,class_weights=True  --num_epochs=400  --random_seed=3  --tvt_list=['train', 'test', 'val']  --tvt_ratio=[0.8, 0.1, 0.1]  --use_best_val_model_for_inference=True  --use_comet_ml=False  --use_edge_weights=False  --user=nasung  --validation_metric=accuracy  --validation_window_size=10  --word_window_size=10
+

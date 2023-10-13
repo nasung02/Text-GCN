@@ -33,7 +33,7 @@ class TextGNN(nn.Module):
         acts = [pyg_graph.x]
         for i, layer in enumerate(self.layers):
             ins = acts[-1]
-            outs = layer(ins, pyg_graph)
+            outs = layer.forward(ins, pyg_graph)
             acts.append(outs)
 
         return self._loss(acts[-1], dataset)
@@ -233,19 +233,21 @@ class GCNConv(MessagePassing):
         assert edge_weight.size(0) == edge_index.size(1)
 
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
-        edge_index = add_self_loops(edge_index, num_nodes)
+        edge_index = add_self_loops(edge_index, num_nodes = num_nodes)
         loop_weight = torch.full((num_nodes, ),
                                  1 if not improved else 2,
                                  dtype=edge_weight.dtype,
                                  device=edge_weight.device)
         edge_weight = torch.cat([edge_weight, loop_weight], dim=0)
-
-        row, col = edge_index
-        deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+        correct_edge_index, col = edge_index
+        deg = scatter_add(edge_weight, correct_edge_index[0], dim=0, dim_size=num_nodes)
         deg_inv_sqrt = deg.pow(-0.5)
         deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
+        deg2 = scatter_add(edge_weight, correct_edge_index[1], dim=0, dim_size=num_nodes)
+        deg_inv_sqrt2 = deg.pow(-0.5)
+        deg_inv_sqrt2[deg_inv_sqrt2 == float('inf')] = 0
 
-        return edge_index, deg_inv_sqrt[row] * edge_weight * deg_inv_sqrt[col]
+        return correct_edge_index, deg_inv_sqrt[0] * edge_weight * deg_inv_sqrt2[0]
 
     def forward(self, x, edge_index, edge_weight=None):
         """"""
